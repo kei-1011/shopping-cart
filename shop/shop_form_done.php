@@ -20,7 +20,7 @@ require_once('../common/common.php');
 
 $post = e($_POST);
 
-$name = $post['name'];
+$namae = $post['name'];
 $mail = $post['mail'];
 $postcode = $post['postcode'];
 $address = $post['address'];
@@ -62,6 +62,7 @@ for($i =0;$i<$max;$i++) {
 
   $name = $rec['name'];
   $price  = $rec['price'];
+  $kakaku[] = $price;
   $suryo  = $kazu[$i];
   $shokei = $price * $suryo;
 
@@ -71,7 +72,42 @@ for($i =0;$i<$max;$i++) {
   $content .= $shokei."円 \n";
 }
 
-$dbh = null;
+//注文データを追加
+$sql    = 'INSERT INTO dat_sales(code_member,name,email,postcode,address,tel) VALUES (?,?,?,?,?,?)';
+$stmt   = $dbh->prepare($sql);
+$data   = array();
+$data[] = 0;  //会員コード
+$data[] = $namae;
+$data[] = $mail;
+$data[] = $postcode;
+$data[] = $address;
+$data[] = $tel;
+$stmt->execute($data);
+
+
+//直近に発番された番号を取得する
+$sql  = 'SELECT LAST_INSERT_ID()';
+$stmt = $dbh->prepare($sql);
+$stmt->execute();
+$rec  = $stmt->fetch(PDO::FETCH_ASSOC);
+$lastcode = $rec['LAST_INSERT_ID()'];
+
+
+//商品明細を追加する
+for($i=0;$i<$max;$i++) {
+
+  $sql    = 'INSERT INTO dat_sales_product(code_sales,code_product,price,quantity) VALUES (?,?,?,?)';
+  $stmt   = $dbh->prepare($sql);
+  $data   = array();
+  $data[] = $lastcode;
+  $data[] = $cart[$i];
+  $data[] = $kakaku[$i];
+  $data[] = $kazu[$i];
+  $stmt->execute($data);
+}
+
+
+$dbh  = null;
 
 $content .= "-----------------------\n";
 $content .= "▶︎送料は無料です。\n";
@@ -119,7 +155,7 @@ mb_send_mail('k.aries0407@gmail.com',$title,$content,$header);
 ?>
   <div class="container">
     <div class="row">
-      <p><?php echo $name;?>様</p>
+      <p><?php echo $namae;?>様</p>
       <p>ご注文ありがとうございました。</p>
       <p><?php echo $mail;?>のメールアドレスにご注文確認メールを送付いたしましたので、ご確認ください。</p>
     </div>
