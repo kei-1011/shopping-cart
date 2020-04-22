@@ -71,6 +71,13 @@ for($i =0;$i<$max;$i++) {
   $content .= $suryo.'個 =';
   $content .= $shokei."円 \n";
 }
+/*
+同時時刻に注文が入った場合、同じ番号が返されるのを防ぐ　テーブルロック
+*/
+$sql  = 'LOCK TABLES dat_sales,dat_sales_product WRITE';
+$stmt = $dbh->prepare($sql);
+$stmt->execute();
+
 
 //注文データを追加
 $sql    = 'INSERT INTO dat_sales(code_member,name,email,postcode,address,tel) VALUES (?,?,?,?,?,?)';
@@ -106,6 +113,17 @@ for($i=0;$i<$max;$i++) {
   $stmt->execute($data);
 }
 
+
+//テーブルロックを解除
+$sql = 'UNLOCK TABLES';
+$stmt = $dbh->prepare($sql);
+$stmt->execute();
+
+
+/*
+二つのテーブルの結合
+SELECT * FROM dat_sales,dat_sales_product WHERE dat_sales.code = dat_sales_product.code_sales
+*/
 
 $dbh  = null;
 
@@ -158,6 +176,7 @@ mb_send_mail('k.aries0407@gmail.com',$title,$content,$header);
       <p><?php echo $namae;?>様</p>
       <p>ご注文ありがとうございました。</p>
       <p><?php echo $mail;?>のメールアドレスにご注文確認メールを送付いたしましたので、ご確認ください。</p>
+      <a href="shop_list.php" class="btn btn-primary">商品画面へ</a>
     </div>
   </div>
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
