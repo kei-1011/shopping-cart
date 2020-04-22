@@ -23,13 +23,14 @@ $address = $post['address'];
 $tel = $post['tel'];
 
 
+
 $error = array();
 
-if ($name == '') {
+if (empty($name)) {
   $error["name"] = '名前が入力されていません。';
 }
 
-if (preg_match('/^[¥w¥-¥.]+¥@[¥w¥-¥.]+¥.([a-z]+)$/', $mail) == 0) {
+if (preg_match('/^[\w\-\.]+\@[\w\-\.]+\.([a-z]+)$/', $mail) == 0) {
   $error['mail'] = 'メールアドレスを正確に入力してください。';
 }
 
@@ -37,11 +38,11 @@ if (preg_match('/^[0-9]+$/', $postcode) == 0) {
   $error['postcode'] = '郵便番号は半角数字で入力してください。';
 }
 
-if ($address) {
+if (empty($address)) {
   $error['address'] = '住所が入力されていません。';
 }
 
-if (preg_match('/^¥d{2,5}-?¥d{2,5}-?¥d{4,5}$/', $tel) == 0) {
+if (preg_match('/^\d{2,5}-?\d{2,5}-?\d{4,5}$/', $tel) == 0) {
   $error['tel'] = '電話番号を正確に入力してください。';
 }
 
@@ -71,24 +72,23 @@ if (preg_match('/^¥d{2,5}-?¥d{2,5}-?¥d{4,5}$/', $tel) == 0) {
     <form action="shop_form_done.php" method="post">
       <div class="form-group row">
         <label for="name" class='col-sm-2'>お名前</label>
-        <input type="text" name="name" id="name" class="form-control col-sm-10" value="<?php echo $name; ?>">
+        <span class="col-sm-10"><?php echo $name; ?></span>
       </div>
       <div class="form-group row">
         <label for="mail" class='col-sm-2'>メールアドレス</label>
-        <input type="email" name="mail" id="mail" class="form-control col-sm-10" value="<?php echo $mail; ?>">
+        <span class="col-sm-10"><?php echo $mail; ?></span>
       </div>
       <div class="form-group row">
         <label for="postcode" class='col-sm-2'>郵便番号</label>
-        <input type="text" name="postcode" id="postcode" class="form-control col-sm-10"
-          value="<?php echo $postcode; ?>">
+        <span class="col-sm-10"><?php echo $postcode; ?></span>
       </div>
       <div class="form-group row">
         <label for="address" class='col-sm-2'>住所</label>
-        <input type="text" name="address" id="address" class="form-control col-sm-10" value="<?php echo $address; ?>">
+        <span class="col-sm-10"><?php echo $address; ?></span>
       </div>
       <div class="form-group row">
         <label for="tel" class=' col-sm-2'>電話番号</label>
-        <input type="tel" name="tel" id="tel" class="form-control col-sm-10" value="<?php echo $tel; ?>">
+        <span class="col-sm-10"><?php echo $tel; ?></span>
       </div>
       <input type="button" onclick="history.back()" value=' 戻る' class="btn btn-link">
       <input type="hidden" name="name" value="<?php echo $name; ?>">
@@ -96,7 +96,7 @@ if (preg_match('/^¥d{2,5}-?¥d{2,5}-?¥d{4,5}$/', $tel) == 0) {
       <input type="hidden" name="postcode" value="<?php echo $postcode; ?>">
       <input type="hidden" name="address" value="<?php echo $address; ?>">
       <input type="hidden" name="tel" value="<?php echo $tel; ?>">
-      <?php if (!isset($error)) { ?>
+      <?php if (empty($error)) { ?>
       <input type="submit" class="btn btn-primary" value="OK">
       <?php } ?>
     </form>
